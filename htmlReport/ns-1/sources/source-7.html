@@ -1,0 +1,342 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PlantTrayGUI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">presentation</a>
+</div>
+
+<h1>Coverage Summary for Class: PlantTrayGUI (presentation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlantTrayGUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93%
+  </span>
+  <span class="absValue">
+    (66/71)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PlantTrayGUI$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PlantTrayGUI$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.5%
+  </span>
+  <span class="absValue">
+    (74/80)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package presentation;
+&nbsp;
+&nbsp;import dominio.Tablero;
+&nbsp;import dominio.SunListener;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.MouseAdapter;
+&nbsp;import java.awt.event.MouseEvent;
+&nbsp;import java.awt.image.BufferedImage;
+&nbsp;import java.io.File;
+&nbsp;import javax.imageio.ImageIO;
+&nbsp;
+&nbsp;public class PlantTrayGUI extends JPanel implements SunListener {
+&nbsp;    private JLabel sunCounter;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public PlantTrayGUI() {</b>
+<b class="fc">&nbsp;        setLayout(null); // Diseño absoluto para personalización</b>
+<b class="fc">&nbsp;        setBackground(new Color(101, 67, 33)); // Color café más oscuro</b>
+&nbsp;
+&nbsp;        // Dimensiones dinámicas para ocupar 3/4 del ancho y estar centrada
+<b class="fc">&nbsp;        int width = Toolkit.getDefaultToolkit().getScreenSize().width;</b>
+<b class="fc">&nbsp;        int trayWidth = (int) (width * 0.75);</b>
+<b class="fc">&nbsp;        int trayHeight = 150;</b>
+<b class="fc">&nbsp;        int xOffset = (width - trayWidth) / 2;</b>
+&nbsp;
+<b class="fc">&nbsp;        setBounds(xOffset, 10, trayWidth, trayHeight);</b>
+&nbsp;
+&nbsp;        // Contenedor general
+<b class="fc">&nbsp;        JPanel mainContainer = new JPanel(); // Declaración y configuración aquí</b>
+<b class="fc">&nbsp;        mainContainer.setLayout(null);</b>
+<b class="fc">&nbsp;        mainContainer.setBounds(0, 0, trayWidth, trayHeight);</b>
+<b class="fc">&nbsp;        mainContainer.setBackground(new Color(101, 67, 33)); // Fondo igual que la bandeja</b>
+<b class="fc">&nbsp;        add(mainContainer);</b>
+&nbsp;
+&nbsp;        // Panel de la pala
+<b class="fc">&nbsp;        JPanel shovelPanel = createShovelPanel();</b>
+<b class="fc">&nbsp;        shovelPanel.setBounds(getWidth() - 120, 10, 100, 100); // Posición correcta de la pala</b>
+<b class="fc">&nbsp;        mainContainer.add(shovelPanel);</b>
+&nbsp;
+&nbsp;        // Contenedor de las plantas
+<b class="fc">&nbsp;        JPanel plantContainer = new JPanel();</b>
+<b class="fc">&nbsp;        plantContainer.setLayout(null);</b>
+<b class="fc">&nbsp;        plantContainer.setBounds(200, 10, trayWidth - 210, 120); // Área para las plantas</b>
+<b class="fc">&nbsp;        plantContainer.setBackground(new Color(80, 50, 20)); // Café más oscuro para contraste</b>
+<b class="fc">&nbsp;        mainContainer.add(plantContainer);</b>
+&nbsp;
+&nbsp;        // Contador de soles
+<b class="fc">&nbsp;        sunCounter = new JLabel(String.valueOf(Tablero.getInstance().getCurrentSuns()));</b>
+<b class="fc">&nbsp;        sunCounter.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 24));</b>
+<b class="fc">&nbsp;        sunCounter.setForeground(Color.WHITE);</b>
+<b class="fc">&nbsp;        sunCounter.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        sunCounter.setBounds(20, 30, 60, 60); // Tamaño y posición dentro del contenedor</b>
+<b class="fc">&nbsp;        mainContainer.add(sunCounter);</b>
+&nbsp;
+&nbsp;        // Icono del sol
+<b class="fc">&nbsp;        JLabel sunIcon = new JLabel(new ImageIcon(getScaledImage(</b>
+<b class="fc">&nbsp;                String.valueOf(getClass().getResource(&quot;/images/Diseño sin título (4).png&quot;)),</b>
+&nbsp;                50, 50)));
+<b class="fc">&nbsp;        sunIcon.setBounds(90, 30, 60, 60); // Posición al lado del contador</b>
+<b class="fc">&nbsp;        mainContainer.add(sunIcon);</b>
+&nbsp;
+&nbsp;        // Plantas disponibles
+<b class="fc">&nbsp;        String[] plantImages = {</b>
+&nbsp;                &quot;resources/images/gira.png&quot;,        // Imagen del Sunflower
+&nbsp;                &quot;resources/images/peashooter.png&quot;, // Imagen del Peashooter
+&nbsp;                &quot;resources/images/wall.png&quot;,       // Imagen del Wall-nut
+&nbsp;                &quot;resources/images/potato.png&quot;,     // Imagen del PotatoMine
+&nbsp;                &quot;resources/images/big.png&quot;,        // Imagen del ECIPlant
+&nbsp;                &quot;resources/images/exam.png&quot;    // Imagen del EvolvePlan
+&nbsp;        };
+<b class="fc">&nbsp;        String[] plantTypes = {&quot;Sunflower&quot;, &quot;Peashooter&quot;, &quot;Wall-nut&quot;, &quot;PotatoMine&quot;, &quot;ECIPlant&quot;, &quot;EvolvePlant&quot;};</b>
+<b class="fc">&nbsp;        int[] plantCosts = {50, 100, 50, 25, 200, 200}; // Agregar el costo de ExamPlan</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 0; i &lt; plantImages.length; i++) {</b>
+<b class="fc">&nbsp;            JPanel plantPanel = createPlantPanel(plantImages[i], plantCosts[i], plantTypes[i]);</b>
+<b class="fc">&nbsp;            plantPanel.setBounds(10 + (i * 110), 10, 100, 100);</b>
+<b class="fc">&nbsp;            plantContainer.add(plantPanel);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Tablero getInstance() {
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void reset() {
+&nbsp;        // Limpia cualquier planta seleccionada o estado interno
+<b class="nc">&nbsp;        removeAll();</b>
+<b class="nc">&nbsp;        revalidate();</b>
+<b class="nc">&nbsp;        repaint();</b>
+<b class="nc">&nbsp;        System.out.println(&quot;La bandeja de plantas ha sido reiniciada.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private JPanel createPlantPanel(String imagePath, int cost, String plantType) {
+<b class="fc">&nbsp;        JPanel plantPanel = new JPanel();</b>
+<b class="fc">&nbsp;        plantPanel.setLayout(new BorderLayout());</b>
+<b class="fc">&nbsp;        plantPanel.setBackground(new Color(210, 180, 140)); // Color madera clara</b>
+<b class="fc">&nbsp;        plantPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));</b>
+&nbsp;
+<b class="fc">&nbsp;        JLabel plantImage = new JLabel(new ImageIcon(getScaledImage(imagePath, 80, 80)));</b>
+<b class="fc">&nbsp;        plantImage.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        plantPanel.add(plantImage, BorderLayout.CENTER);</b>
+&nbsp;
+<b class="fc">&nbsp;        JLabel plantCost = new JLabel(String.valueOf(cost));</b>
+<b class="fc">&nbsp;        plantCost.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 16));</b>
+<b class="fc">&nbsp;        plantCost.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        plantPanel.add(plantCost, BorderLayout.SOUTH);</b>
+&nbsp;
+<b class="fc">&nbsp;        plantPanel.addMouseListener(new MouseAdapter() {</b>
+&nbsp;            @Override
+&nbsp;            public void mouseClicked(MouseEvent e) {
+<b class="fc">&nbsp;                Tablero tablero = Tablero.getInstance();</b>
+<b class="pc">&nbsp;                if (tablero.getCurrentSuns() &gt;= cost) {</b>
+<b class="fc">&nbsp;                    tablero.setSelectedPlantType(plantType);</b>
+<b class="fc">&nbsp;                    System.out.println(&quot;Planta seleccionada: &quot; + plantType);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    JOptionPane.showMessageDialog(null, &quot;No tienes suficientes soles.&quot;, &quot;Error&quot;, JOptionPane.WARNING_MESSAGE);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        return plantPanel;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private Image getScaledImage(String imagePath, int width, int height) {
+&nbsp;        try {
+<b class="fc">&nbsp;            File imageFile = new File(imagePath);</b>
+<b class="fc">&nbsp;            BufferedImage img = ImageIO.read(imageFile);</b>
+<b class="fc">&nbsp;            return img.getScaledInstance(width, height, Image.SCALE_SMOOTH);</b>
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            System.err.println(&quot;Error cargando imagen: &quot; + imagePath + &quot; - &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;            return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void updateSunCount(int suns) {
+<b class="fc">&nbsp;        sunCounter.setText(String.valueOf(suns));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private JPanel createShovelPanel() {
+<b class="fc">&nbsp;        JPanel shovelPanel = new JPanel();</b>
+<b class="fc">&nbsp;        shovelPanel.setLayout(new BorderLayout());</b>
+<b class="fc">&nbsp;        shovelPanel.setBackground(new Color(150, 75, 0)); // Color marrón para la pala</b>
+<b class="fc">&nbsp;        shovelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));</b>
+&nbsp;
+<b class="fc">&nbsp;        JLabel shovelImage = new JLabel(new ImageIcon(getScaledImage(&quot;resources/images/shovel.png&quot;, 80, 80)));</b>
+<b class="fc">&nbsp;        shovelImage.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        shovelPanel.add(shovelImage, BorderLayout.CENTER);</b>
+&nbsp;
+<b class="fc">&nbsp;        shovelPanel.addMouseListener(new MouseAdapter() {</b>
+&nbsp;            @Override
+&nbsp;            public void mouseClicked(MouseEvent e) {
+<b class="fc">&nbsp;                Tablero tablero = Tablero.getInstance();</b>
+<b class="fc">&nbsp;                tablero.setSelectedPlantType(&quot;shovel&quot;);</b>
+&nbsp;
+&nbsp;
+&nbsp;            }
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        return shovelPanel;</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-16 20:51</div>
+</div>
+</body>
+</html>

@@ -1,5 +1,7 @@
 package dominio;
 
+import presentation.LoseFrame;
+
 import javax.swing.*;
 /**
  * La clase `Basic` representa un zombie básico en el juego.
@@ -109,34 +111,37 @@ public class Basic extends Zombie implements Attacker {
     }
 
     /**
-     * Mueve al zombie una columna a la izquierda.
-     * Si llega al borde o es eliminado, se maneja el evento correspondiente.
+     * Mueve al zombie hacia la izquierda en el tablero 
+     */
+    /**
+     * Mueve al zombie hacia la izquierda en el tablero.
      */
     private void move() {
         int oldCol = getCol();
         int newCol = oldCol - 1;
 
-        if (HEALTH <= 0) {
-            eliminate(); // Eliminar si está muerto
-            return;
-        }
+        if (newCol >= 0) {
+            setCol(newCol); // Actualiza la posición lógica del zombie
+            Tablero.getInstance().notifyZombieMoved(this); // Notifica al tablero
 
-        if (newCol > 0) {
-            setCol(newCol);
-            Tablero.getInstance().notifyZombieMoved(this);
-
+            // Verificar si el zombie está en la posición crítica (fila, columna 1)
             if (newCol == 1) {
-                Tablero.getInstance().instaKillZombies(getRow()); // Usar la podadora
-                if (HEALTH <= 0) {
-                    eliminate();
-                    return;
-                }
+                Tablero.getInstance().instaKillZombies(getRow());
             }
 
-        } else if (newCol == 0 && HEALTH > 0) {
-            System.exit(0); // Fin del juego
+            System.out.println("Zombie en (" + getRow() + ", " + oldCol + ") avanza a (" + getRow() + ", " + newCol + ").");
+        }
+
+        // Si el zombie alcanza la columna 0
+        if (newCol == 0 && health > 0) {
+            Tablero.getInstance().setLose(true); // Cambia el estado del juego a "perdido"
+            SwingUtilities.invokeLater(() -> {
+                new LoseFrame(); // Abre la interfaz de derrota
+            });
         }
     }
+
+
 
     /**
      * Cambia la representación gráfica del zombie al GIF de muerte.
@@ -152,8 +157,9 @@ public class Basic extends Zombie implements Attacker {
      */
     @Override
     public void eliminate() {
-        stopAction();
-        Tablero.getInstance().removeZombie(this);
+        stopAction(); // Detener todos los temporizadores
+        Tablero.getInstance().removeZombie(this); // Notificar al tablero para eliminación
+        System.out.println("Zombie eliminado en (" + row + ", " + col + ").");
     }
 
     /**
@@ -163,6 +169,10 @@ public class Basic extends Zombie implements Attacker {
         if (timer != null && timer.isRunning()) {
             timer.stop();
         }
+        if (attackTimer != null && attackTimer.isRunning()) {
+            attackTimer.stop();
+        }
+        System.out.println("Timers detenidos para zombie en (" + row + ", " + col + ").");
     }
 
     /**

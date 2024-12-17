@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3bfd27b8-9ebf-417d-b594-3c94164cbdd1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pvzPoob.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dominio/EvolvePlant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/presentation/LoseFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/presentation/WinFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pro.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/pro/images/Diseño sin título (4).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/pro/images/png-transparent-plants-versus-zombie-zombie-art-plants-vs-zombies-2-it-s-about-time-plants-vs-zombies-garden-warfare-2-minecraft-zombie-game-mammal-vertebrate-thumbnail.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/images/Diseño sin título (4).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Basic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Basic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Brainstein.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Brainstein.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/ECIZombie.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/ECIZombie.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Peashooter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Peashooter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Projectile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Projectile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/SunProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/SunProducer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Tablero.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Tablero.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dominio/Zombie.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dominio/Zombie.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/GameGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/GameGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/PlantTrayGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/PlantTrayGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/PlantsVsZombiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/PlantsVsZombiesTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExportToHTMLSettings">
+    <option name="OUTPUT_DIRECTORY" value="F:\descargas\poobfinalFinal\pvzPoob\htmlReport" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2qG6fN6qIcD9Sww5CJAvKcvT6a1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.GameGUI.executor": "Run",
+    "Application.LoseFrame.executor": "Run",
+    "Application.WinFrame.executor": "Run",
+    "JUnit.PlantsVsZombiesTest.ShouldNoDeleteIfPlantIsNull.executor": "Run",
+    "JUnit.PlantsVsZombiesTest.testNoPlantPlacementWhenShovelIsActive.executor": "Run",
+    "JUnit.PlantsVsZombiesTest.testRemovePlantWithShovel.executor": "Run",
+    "JUnit.PlantsVsZombiesTest.testRemovePlantWithShovelOnEmptyCell.executor": "Run",
+    "JUnit.test in pvzPoob.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "F:/descargas/poobfinalFinal/pvzPoob/htmlReport",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RunManager" selected="Application.GameGUI">
+    <configuration name="GameGUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="presentation.GameGUI" />
+      <module name="pvzPoob" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="presentation.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlantsVsZombiesTest.ShouldNoDeleteIfPlantIsNull" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="pvzPoob" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.PlantsVsZombiesTest" />
+      <option name="METHOD_NAME" value="ShouldNoDeleteIfPlantIsNull" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlantsVsZombiesTest.testNoPlantPlacementWhenShovelIsActive" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="pvzPoob" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.PlantsVsZombiesTest" />
+      <option name="METHOD_NAME" value="testNoPlantPlacementWhenShovelIsActive" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlantsVsZombiesTest.testRemovePlantWithShovel" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="pvzPoob" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.PlantsVsZombiesTest" />
+      <option name="METHOD_NAME" value="testRemovePlantWithShovel" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlantsVsZombiesTest.testRemovePlantWithShovelOnEmptyCell" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="pvzPoob" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.PlantsVsZombiesTest" />
+      <option name="METHOD_NAME" value="testRemovePlantWithShovelOnEmptyCell" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.GameGUI" />
+        <item itemvalue="JUnit.PlantsVsZombiesTest.testRemovePlantWithShovel" />
+        <item itemvalue="JUnit.PlantsVsZombiesTest.testRemovePlantWithShovelOnEmptyCell" />
+        <item itemvalue="JUnit.PlantsVsZombiesTest.ShouldNoDeleteIfPlantIsNull" />
+        <item itemvalue="JUnit.PlantsVsZombiesTest.testNoPlantPlacementWhenShovelIsActive" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3bfd27b8-9ebf-417d-b594-3c94164cbdd1" name="Changes" comment="" />
+      <created>1734276668806</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734276668806</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/pvzPoob$GameGUI.ic" NAME="GameGUI Coverage Results" MODIFIED="1734400285127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>presentation.*</FILTER>
+    </SUITE>
+  </component>
+</project>

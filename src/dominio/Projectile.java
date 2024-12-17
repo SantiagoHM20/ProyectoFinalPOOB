@@ -6,6 +6,10 @@ import javax.swing.*;
  * La clase Projectile representa un proyectil que puede moverse por el tablero,
  * infligir daño a los zombies y tener una imagen asociada.
  */
+/**
+ * La clase Projectile representa un proyectil que puede moverse por el tablero,
+ * infligir daño a los zombies y tener una imagen asociada.
+ */
 public class Projectile {
 
     private int row; // Fila actual del proyectil en el tablero
@@ -24,8 +28,6 @@ public class Projectile {
         this.row = row;
         this.col = col;
         this.damage = damage;
-        String gifPath = ""; // Ruta del GIF (debe ser proporcionada para que funcione)
-        gifProyectile = new ImageIcon(getClass().getResource(gifPath)); // Carga el GIF del proyectil
     }
 
     /**

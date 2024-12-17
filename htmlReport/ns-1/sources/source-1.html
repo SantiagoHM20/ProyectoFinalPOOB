@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">presentation</a>
+</div>
+
+<h1>Coverage Summary for Class: GameController (presentation)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package presentation;
+&nbsp;
+&nbsp;import dominio.Tablero;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.net.URL;
+&nbsp;
+&nbsp;
+&nbsp;public class LoseFrame extends JFrame {
+&nbsp;
+&nbsp;    private JButton retryButton;
+&nbsp;    private JButton mainMenuButton;
+&nbsp;    private JButton exitButton;
+&nbsp;
+&nbsp;    public LoseFrame() {
+&nbsp;        resetGameState();
+&nbsp;        prepareElements();
+&nbsp;        prepareActions();
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareElements() {
+&nbsp;        setTitle(&quot;Game Over&quot;);
+&nbsp;        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+&nbsp;        setLayout(new BorderLayout());
+&nbsp;
+&nbsp;        // Configurar la imagen de fondo
+&nbsp;        JLabel backgroundLabel = new JLabel();
+&nbsp;        backgroundLabel.setHorizontalAlignment(SwingConstants.CENTER);
+&nbsp;        URL imageUrl = getClass().getResource(&quot;/images/YouLose.PNG&quot;);
+&nbsp;        if (imageUrl != null) {
+&nbsp;            ImageIcon imageIcon = new ImageIcon(imageUrl);
+&nbsp;            backgroundLabel.setIcon(imageIcon);
+&nbsp;        } else {
+&nbsp;            System.err.println(&quot;No se pudo cargar la imagen: /images/YouLose.PNG&quot;);
+&nbsp;        }
+&nbsp;
+&nbsp;        add(backgroundLabel, BorderLayout.CENTER);
+&nbsp;
+&nbsp;        // Configurar los botones
+&nbsp;        JPanel buttonPanel = new JPanel();
+&nbsp;        buttonPanel.setLayout(new FlowLayout());
+&nbsp;
+&nbsp;        retryButton = new JButton(&quot;Reintentar&quot;);
+&nbsp;        mainMenuButton = new JButton(&quot;Menú Principal&quot;);
+&nbsp;        exitButton = new JButton(&quot;Salir&quot;);
+&nbsp;
+&nbsp;        buttonPanel.add(retryButton);
+&nbsp;        buttonPanel.add(mainMenuButton);
+&nbsp;        buttonPanel.add(exitButton);
+&nbsp;
+&nbsp;        add(buttonPanel, BorderLayout.SOUTH);
+&nbsp;
+&nbsp;        // Configuración del frame
+&nbsp;        setSize(800, 600);
+&nbsp;        setLocationRelativeTo(null);
+&nbsp;        setVisible(true);
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareActions() {
+&nbsp;        // Manejar las acciones de los botones
+&nbsp;
+&nbsp;        retryButton.addActionListener((ActionEvent e) -&gt; {
+&nbsp;            // Reiniciar el juego
+&nbsp;            resetGameState();
+&nbsp;            dispose();
+&nbsp;            new NewGameFrame().setVisible(true);
+&nbsp;        });
+&nbsp;
+&nbsp;        mainMenuButton.addActionListener((ActionEvent e) -&gt; {
+&nbsp;            // Volver al menú principal
+&nbsp;            resetGameState();
+&nbsp;            dispose();
+&nbsp;            new MainMenuFrame().setVisible(true);
+&nbsp;        });
+&nbsp;
+&nbsp;        exitButton.addActionListener((ActionEvent e) -&gt; {
+&nbsp;            // Salir del juego
+&nbsp;            System.exit(0);
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    private void resetGameState() {
+&nbsp;        // Reinicia el estado lógico del tablero y la interfaz
+&nbsp;        GameController.resetGame();
+&nbsp;
+&nbsp;        // Reinicia el estado del tablero (plantas, zombis, soles, etc.)
+&nbsp;        Tablero.getInstance().reset();
+&nbsp;
+&nbsp;        System.out.println(&quot;El estado lógico y visual del juego se ha reiniciado.&quot;);
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+&nbsp;        SwingUtilities.invokeLater(LoseFrame::new);
+&nbsp;    }
+&nbsp;}
+&nbsp;
+<b class="nc">&nbsp;class GameController {</b>
+<b class="nc">&nbsp;    private static Object board = null; // Representación del tablero</b>
+<b class="nc">&nbsp;    private static Object boardUI = null; // Interfaz gráfica del tablero</b>
+&nbsp;
+&nbsp;    public static void resetGame() {
+&nbsp;        // Reiniciar el tablero y la interfaz gráfica
+<b class="nc">&nbsp;        board = null;</b>
+<b class="nc">&nbsp;        boardUI = null;</b>
+<b class="nc">&nbsp;        System.out.println(&quot;El estado del juego se ha reiniciado.&quot;);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-16 20:51</div>
+</div>
+</body>
+</html>

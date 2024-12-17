@@ -1,5 +1,7 @@
 package dominio;
 
+import presentation.LoseFrame;
+
 import javax.swing.*;
 
 /**
@@ -10,9 +12,16 @@ public class ECIZombie extends Zombie implements Attacker {
 
     public static final int COST = 250; // Costo del zombie en términos de recursos del juego
     private static final int HEALTH = 200; // Salud inicial del zombie
-    private static final int MOVE_INTERVAL = 250; // Intervalo de movimiento en milisegundos
+    private static final int FIRE_INTERVAL = 1500; // Intervalo de ataque en milisegundos (1.5 segundos)
+    private static final int MOVE_INTERVAL = 4000; // Intervalo de movimiento en milisegundos (4 segundos)
+    private static final int DAMAGE = 20; // Daño infligido a la planta con cada ataque
 
-    private ImageIcon gifBasic; // Imagen o GIF que representa al zombie
+    private ImageIcon gifECIZombie; // Imagen o GIF que representa al zombie
+    private Timer actionTimer;
+    private Timer actionTimer2; // Temporizador para el ataque periódico
+
+    String gifDeath = "/images/ZombieDie.gif";  // Ruta del GIF que se muestra cuando el zombie muere
+    private ImageIcon BasicDeath = new ImageIcon(getClass().getResource(gifDeath)); // Giff para cuando muere el Zombie
 
     /**
      * Constructor de ECIZombie.
@@ -23,62 +32,29 @@ public class ECIZombie extends Zombie implements Attacker {
      */
     public ECIZombie(int row, int col) {
         super(row, col, COST); // Llama al constructor de la clase padre Zombie
-        this.health = 200; // Asigna la salud inicial
+        this.health = HEALTH; // Asigna la salud inicial
 
         // Carga la imagen o GIF del zombie desde el classpath
         String gifPath = "/images/FlagZombie.gif";
-        gifBasic = new ImageIcon(getClass().getResource(gifPath));
+        gifECIZombie = new ImageIcon(getClass().getResource(gifPath));
 
         action(); // Inicia la acción al crearse
     }
 
     /**
-     * Inicia la acción del zombie, que incluye movimiento periódico.
+     * Inicia la acción del zombie, que incluye ataques periódicos y movimiento.
      */
     @Override
     public void action() {
-        Timer timer = new Timer(MOVE_INTERVAL, e -> shoot()); // Ejecuta la acción periódicamente
-        timer.setRepeats(true); // Configura el temporizador para repetir
-        timer.start(); // Inicia el temporizador
-    }
+        // Temporizador para el ataque
+        actionTimer = new Timer(FIRE_INTERVAL, e -> shoot());
+        actionTimer.setRepeats(true);
+        actionTimer.start();
 
-    /**
-     * Cambia la representación gráfica del zombie.
-     * (Actualmente no implementado)
-     */
-    @Override
-    public void changeGiff() {
-        // Método vacío; implementar si se requiere cambiar la animación del zombie
-    }
-
-    /**
-     * Detiene cualquier acción asociada al zombie.
-     * (Actualmente no implementado)
-     */
-    @Override
-    public void stopAction() {
-        // Método vacío; implementar si se requiere detener acciones
-    }
-
-    /**
-     * Aplica daño al zombie.
-     * (Actualmente no implementado)
-     *
-     * @param i Cantidad de daño a aplicar.
-     */
-    @Override
-    public void takeDamage(int i) {
-        // Método vacío; implementar si se requiere aplicar daño
-    }
-
-    /**
-     * Realiza una acción de disparo. Si no está atacando, se mueve.
-     */
-    @Override
-    public void shoot() {
-        if (!attack()) { // Si no está atacando
-            move(); // Procede a moverse
-        }
+        // Temporizador para el movimiento
+        actionTimer2 = new Timer(MOVE_INTERVAL, e -> move());
+        actionTimer2.setRepeats(true);
+        actionTimer2.start();
     }
 
     /**
@@ -86,26 +62,55 @@ public class ECIZombie extends Zombie implements Attacker {
      */
     @Override
     public void eliminate() {
+        stopAction();
         Tablero.getInstance().removeZombie(this); // Notifica al tablero que se elimine al zombie
-        System.out.println("Zombie eliminado en (" + getRow() + ", " + getCol() + ").");
+        System.out.println("ECIZombie eliminado en (" + getRow() + ", " + getCol() + ").");
     }
 
     /**
-     * Realiza un ataque contra una planta adyacente si existe.
-     *
-     * @return true si el zombie atacó; false de lo contrario.
+     * Cambia la representación gráfica del zombie al GIF de muerte.
      */
-    private boolean attack() {
-        int targetCol = getCol() - 1; // Calcula la columna objetivo (una columna antes)
+    @Override
+    public void changeGiff() {
+        gifECIZombie = BasicDeath;
+        Tablero.getInstance().updateZombieCell(this);
+    }
 
-        // Verifica si hay una planta en la columna anterior
-        Plant targetPlant = Tablero.getInstance().getPlantAt(getRow(), targetCol);
-        if (targetPlant != null) {
-            System.out.println("Zombie en (" + getRow() + ", " + getCol() + ") muerde a la planta en (" + getRow() + ", " + targetCol + ").");
-            targetPlant.setHealth(targetPlant.getHealth() - 50); // Reduce la salud de la planta
-            return true; // Indica que el zombie ha atacado
+    /**
+     * Detiene cualquier acción asociada al zombie.
+     */
+    @Override
+    public void stopAction() {
+        if (actionTimer != null && actionTimer.isRunning()) {
+            actionTimer.stop();
         }
-        return false; // Indica que no hay planta para atacar
+        if (actionTimer2 != null && actionTimer2.isRunning()) {
+            actionTimer2.stop();
+        }
+        System.out.println("Action timers stopped for ECIZombie at (" + getRow() + ", " + getCol() + ").");
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            eliminate();
+        }
+    }
+
+    /**
+     * Realiza un ataque a distancia a la planta más cercana en la misma fila.
+     */
+    @Override
+    public void shoot() {
+        // Obtiene la planta más cercana en la misma fila del zombie
+        Plant target = Tablero.getInstance().getClosestPlantInRow(getRow(), getCol());
+
+        if (target != null) {
+            target.takeDamage(DAMAGE); // Inflige daño a la planta
+            System.out.println("ECIZombie ataca a planta en (" + target.getRow() + ", " + target.getCol() + ").");
+        }
+
     }
 
     /**
@@ -126,10 +131,13 @@ public class ECIZombie extends Zombie implements Attacker {
 
             System.out.println("Zombie en (" + getRow() + ", " + oldCol + ") avanza a (" + getRow() + ", " + newCol + ").");
         }
+
         // Si el zombie alcanza el borde izquierdo y sigue vivo
-        if (newCol == 0 && HEALTH > 0) {
-            System.out.println("Zombie en (" + getRow() + ", " + oldCol + ") ha llegado al borde. ¡Fin del juego!");
-            System.exit(0); // Finaliza el programa
+        if (newCol == 0 && health > 0) {
+            Tablero.getInstance().setLose(true); // Cambia el estado del juego a "perdido"
+            SwingUtilities.invokeLater(() -> {
+                new LoseFrame(); // Abre la interfaz de derrota
+            });
         }
     }
 
@@ -140,6 +148,6 @@ public class ECIZombie extends Zombie implements Attacker {
      */
     @Override
     public ImageIcon getImage() {
-        return gifBasic;
+        return gifECIZombie;
     }
 }

@@ -1,11 +1,16 @@
 package test;
 
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.function.Supplier;
+
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,11 +25,23 @@ import javax.swing.*;
 public class PlantsVsZombiesTest {
 
     private Tablero tablero; // Ejemplo de objeto que representa el tablero
+    private JPanel[][] cells;    // Simula las celdas del tablero
+    private Plant[][] plants;
 
     @BeforeEach
-    public void setup() {
-        tablero = new Tablero(); // Inicializa el tablero vacío o al estado deseado
+    public void setUp() {
+        // Configuración inicial para cada prueba
+        tablero = Tablero.getInstance();
+
+        // Inicializar la matriz de celdas (por ejemplo, 5 filas x 9 columnas)
+        cells = new JPanel[5][9];
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 9; j++) {
+                cells[i][j] = new JPanel();
+            }
+        }
     }
+
 
     @Test
     public void getClosestZombieInRow_shouldNotReturnNonexistentZombie() {
@@ -41,6 +58,50 @@ public class PlantsVsZombiesTest {
 
         assertNull(tablero.getPlantAt(2, 3), "La planta debería haber sido eliminada del tablero.");
     }
+
+    @Test
+    void removeEvolvePlant_shouldEvolvePlantCorrectly() {
+        Tablero tablero = Tablero.getInstance();
+        Plant EvolvePlant = new EvolvePlant(2, 3); // Crear una planta ficticia
+        tablero.getPlants()[2][3] = EvolvePlant; // Asignarla manualmente al tablero
+
+        tablero.removePlant(EvolvePlant);
+
+        assertNull(tablero.getPlantAt(2, 3), "La planta debería haber sido eliminada del tablero.");
+    }
+
+    @Test
+    void EvolvePlant_shouldNotDamageZombie() {
+        Tablero tablero = Tablero.getInstance();
+        EvolvePlant evolve = new EvolvePlant(2, 3);
+        tablero.getPlants()[2][3] = evolve;
+
+        Zombie zombie = new Basic(2, 4);
+        tablero.getZombies()[2][4] = zombie;
+
+
+
+        assertEquals(100, zombie.getHealth(), "El Zombie no debería recibir daño porque EvolvePlant en su primera etapa no hace daño");
+    }
+
+    @Test
+    void EvolvePlant_shouldDamageZombie() throws InterruptedException {
+        Tablero tablero = Tablero.getInstance();
+        EvolvePlant evolve = new EvolvePlant(2, 1);
+        tablero.getPlants()[2][1] = evolve;
+
+        Zombie zombie = new Basic(2, 9);
+        tablero.getZombies()[2][9] = zombie;
+
+        //Esperamos a que evolucione
+        Thread.sleep(20000);
+
+
+
+        assertEquals(80, zombie.getHealth(), "El Zombie debería recibir daño porque evolve ya evolucionó");
+    }
+
+
 
     @Test
     void removePlant_shouldNotRemoveNonexistentPlant() {
@@ -219,6 +280,62 @@ public class PlantsVsZombiesTest {
         assertNotNull(tablero.getPlants()[2][3], "La WallNut debería seguir en el tablero.");
     }
 
+    @Test
+    public void testRemovePlantWithShovel() {
+        // Colocar una planta manualmente en la posición (1,1)
+        Plant peashooter = new Peashooter(1, 1);
+        tablero.getPlants()[1][1] = peashooter;
+        tablero.setSelectedPlantType("shovel"); // Activar la pala
+
+        // Simular el clic en la celda (1,1) donde hay una planta
+        tablero.handleCellClick(1, 1, cells[1][1]);
+
+        // Verificar que la planta se eliminó
+        assertNull(tablero.getPlants()[1][1]);
+    }
+
+    @Test
+    public void testRemovePlantWithShovelOnEmptyCell() {
+
+        // Colocar una planta en la posición (2, 2)
+        PotatoMine potatoMine = new PotatoMine(2, 2);
+        tablero.getPlants()[2][2] = potatoMine;
+
+        // Configurar el modo pala
+        tablero.setSelectedPlantType("shovel");
+
+        // Simular clic en la celda vacía (2,2)
+        tablero.handleCellClick(2, 2, cells[2][2]);
+
+        // Verificar que la celda sigue vacía y no arroja error
+        assertNull(tablero.getPlants()[2][2]);
+    }
+
+    @Test
+    public void testNoPlantPlacementWhenShovelIsActive() {
+        tablero.setSelectedPlantType("shovel"); // Activar la pala
+
+        // Simular el clic en una celda vacía (2,3)
+        tablero.handleCellClick(2, 3, cells[2][3]);
+
+        // Verificar que no se colocó ninguna planta en la celda
+        assertNull(tablero.getPlants()[2][3]);
+    }
+
+    @Test
+    public void ShouldNoDeleteIfPlantIsNull() {
+        // Colocar una planta en la posición (2,3)
+        PotatoMine potatoMine = new PotatoMine(2, 3);
+        tablero.getPlants()[2][3] = potatoMine;
+
+        tablero.setSelectedPlantType("shovel"); // Activar la pala
+
+        // Simular el clic en una celda vacía (2,4)
+        tablero.handleCellClick(2, 4, cells[2][4]);
+
+        // Verificar que la planta en (2,3) no fue eliminada
+        assertNotNull(tablero.getPlants()[2][3]);
+    }
 
 
 

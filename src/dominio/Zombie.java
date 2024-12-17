@@ -12,6 +12,7 @@ public abstract class Zombie implements Entity {
     protected int cost;      // Costo de crear o invocar al zombi
     protected int oldCol;    // Columna anterior del zombi, antes de moverse
 
+
     /**
      * Constructor de la clase Zombie.
      *

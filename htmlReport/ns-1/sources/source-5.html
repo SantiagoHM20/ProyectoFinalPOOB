@@ -1,0 +1,494 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MainMenuFrame</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">presentation</a>
+</div>
+
+<h1>Coverage Summary for Class: MainMenuFrame (presentation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MainMenuFrame</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.9%
+  </span>
+  <span class="absValue">
+    (56/59)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MainMenuFrame$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.2%
+  </span>
+  <span class="absValue">
+    (59/62)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package presentation;
+&nbsp;import dominio.PlayerVsMachineException;
+&nbsp;import dominio.Tablero;
+&nbsp;import javax.swing.*;
+&nbsp;import javax.swing.filechooser.FileNameExtensionFilter;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.geom.AffineTransform;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.awt.event.MouseAdapter;
+&nbsp;import java.awt.event.MouseEvent;
+&nbsp;import java.io.File;
+&nbsp;import java.net.URL;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.*;
+&nbsp;import java.io.File;
+&nbsp;import java.net.URL;
+&nbsp;import javax.swing.filechooser.FileNameExtensionFilter;
+&nbsp;
+&nbsp;public class GameGUI {
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+&nbsp;        MainMenuFrame mainMenuFrame = new MainMenuFrame();
+&nbsp;        mainMenuFrame.setVisible(true);
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class MainMenuFrame extends JFrame {
+&nbsp;
+&nbsp;    private JLabel imageLabel;
+&nbsp;    private JButton nuevaPartidaButton;
+&nbsp;    private JButton reanudarPartidaButton;
+&nbsp;
+<b class="fc">&nbsp;    public MainMenuFrame() {</b>
+<b class="fc">&nbsp;        prepareElements();</b>
+<b class="fc">&nbsp;        prepareActions();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareElements() {
+<b class="fc">&nbsp;        setTitle(&quot;Plants vs Zombies&quot;);</b>
+<b class="fc">&nbsp;        setExtendedState(JFrame.MAXIMIZED_BOTH);</b>
+<b class="fc">&nbsp;        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</b>
+<b class="fc">&nbsp;        setLayout(new BorderLayout());</b>
+&nbsp;
+<b class="fc">&nbsp;        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();</b>
+<b class="fc">&nbsp;        int width = screenSize.width;</b>
+<b class="fc">&nbsp;        int height = screenSize.height;</b>
+&nbsp;
+<b class="fc">&nbsp;        JLayeredPane layeredPane = new JLayeredPane();</b>
+<b class="fc">&nbsp;        layeredPane.setPreferredSize(new Dimension(width, height));</b>
+&nbsp;
+<b class="fc">&nbsp;        imageLabel = new JLabel();</b>
+<b class="fc">&nbsp;        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        imageLabel.setVerticalAlignment(SwingConstants.CENTER);</b>
+<b class="fc">&nbsp;        imageLabel.setBounds(0, 0, width, height);</b>
+<b class="fc">&nbsp;        layeredPane.add(imageLabel, JLayeredPane.DEFAULT_LAYER);</b>
+&nbsp;
+<b class="fc">&nbsp;        URL imageUrl = getClass().getResource(&quot;/images/pixelcut-export.jpeg&quot;);</b>
+<b class="pc">&nbsp;        if (imageUrl != null) {</b>
+<b class="fc">&nbsp;            loadImage(imageUrl);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            System.err.println(&quot;No se pudo encontrar la imagen: /images/pixelcut-export.jpeg&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        JPanel buttonPanel = new JPanel();</b>
+<b class="fc">&nbsp;        buttonPanel.setOpaque(false);</b>
+<b class="fc">&nbsp;        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));</b>
+&nbsp;
+<b class="fc">&nbsp;        nuevaPartidaButton = new JButton(&quot;Nueva Partida&quot;);</b>
+<b class="fc">&nbsp;        reanudarPartidaButton = new JButton(&quot;Reanudar Partida&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        configureButton(nuevaPartidaButton);</b>
+<b class="fc">&nbsp;        configureButton(reanudarPartidaButton);</b>
+&nbsp;
+<b class="fc">&nbsp;        buttonPanel.add(Box.createVerticalGlue());</b>
+<b class="fc">&nbsp;        buttonPanel.add(nuevaPartidaButton);</b>
+<b class="fc">&nbsp;        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));</b>
+<b class="fc">&nbsp;        buttonPanel.add(reanudarPartidaButton);</b>
+<b class="fc">&nbsp;        buttonPanel.add(Box.createVerticalGlue());</b>
+&nbsp;
+<b class="fc">&nbsp;        layeredPane.add(buttonPanel, JLayeredPane.PALETTE_LAYER);</b>
+<b class="fc">&nbsp;        buttonPanel.setBounds((width - buttonPanel.getPreferredSize().width) / 2,</b>
+<b class="fc">&nbsp;                (height - buttonPanel.getPreferredSize().height) / 2,</b>
+<b class="fc">&nbsp;                buttonPanel.getPreferredSize().width,</b>
+<b class="fc">&nbsp;                buttonPanel.getPreferredSize().height);</b>
+&nbsp;
+<b class="fc">&nbsp;        add(layeredPane, BorderLayout.CENTER);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void loadImage(URL imageUrl) {
+&nbsp;        try {
+<b class="fc">&nbsp;            ImageIcon imageIcon = new ImageIcon(imageUrl);</b>
+<b class="fc">&nbsp;            Image image = imageIcon.getImage();</b>
+<b class="fc">&nbsp;            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();</b>
+<b class="fc">&nbsp;            Image scaledImage = image.getScaledInstance(screenSize.width, screenSize.height, Image.SCALE_SMOOTH);</b>
+<b class="fc">&nbsp;            imageLabel.setIcon(new ImageIcon(scaledImage));</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void configureButton(JButton button) {
+<b class="fc">&nbsp;        button.setBackground(Color.GRAY);</b>
+<b class="fc">&nbsp;        button.setForeground(Color.BLACK);</b>
+<b class="fc">&nbsp;        button.setOpaque(true);</b>
+<b class="fc">&nbsp;        button.setBorderPainted(false);</b>
+<b class="fc">&nbsp;        button.setFocusPainted(false);</b>
+<b class="fc">&nbsp;        button.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 16));</b>
+<b class="fc">&nbsp;        addHoverEffect(button);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void addHoverEffect(JButton button) {
+<b class="fc">&nbsp;        button.addMouseListener(new MouseAdapter() {</b>
+&nbsp;            @Override
+&nbsp;            public void mouseEntered(MouseEvent e) {
+<b class="fc">&nbsp;                button.setBackground(button.getBackground().brighter());</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            @Override
+&nbsp;            public void mouseExited(MouseEvent e) {
+<b class="fc">&nbsp;                button.setBackground(button.getBackground().darker());</b>
+&nbsp;            }
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareActions() {
+<b class="fc">&nbsp;        nuevaPartidaButton.addActionListener(e -&gt; {</b>
+<b class="fc">&nbsp;            NewGameFrame newGameFrame = new NewGameFrame();</b>
+<b class="fc">&nbsp;            newGameFrame.setVisible(true);</b>
+<b class="fc">&nbsp;            dispose();</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        reanudarPartidaButton.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;            JOptionPane.showMessageDialog(this, &quot;Reanudar está en construcción&quot;);</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class NewGameFrame extends JFrame {
+&nbsp;
+&nbsp;    private JButton playerVsMachineButton;
+&nbsp;    private JButton machineVsMachineButton;
+&nbsp;    private JButton playerVsPlayerButton;
+&nbsp;
+&nbsp;    public NewGameFrame() {
+&nbsp;        prepareElements();
+&nbsp;        prepareActions();
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareElements() {
+&nbsp;        setTitle(&quot;Nueva Partida - Plants vs Zombies&quot;);
+&nbsp;        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+&nbsp;        int width = screenSize.width / 2;
+&nbsp;        int height = screenSize.height / 2;
+&nbsp;        setSize(width, height);
+&nbsp;        setLocationRelativeTo(null);
+&nbsp;        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+&nbsp;        setLayout(new BorderLayout());
+&nbsp;
+&nbsp;        JLayeredPane layeredPane = new JLayeredPane();
+&nbsp;        layeredPane.setPreferredSize(new Dimension(width, height));
+&nbsp;
+&nbsp;        JLabel imageLabel = new JLabel();
+&nbsp;        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+&nbsp;        imageLabel.setVerticalAlignment(SwingConstants.CENTER);
+&nbsp;        imageLabel.setBounds(0, 0, width, height);
+&nbsp;        layeredPane.add(imageLabel, JLayeredPane.DEFAULT_LAYER);
+&nbsp;
+&nbsp;        URL imageUrl = getClass().getResource(&quot;/images/modos de juego.jpg&quot;);
+&nbsp;        if (imageUrl != null) {
+&nbsp;            loadImage(imageLabel, imageUrl);
+&nbsp;        } else {
+&nbsp;            System.err.println(&quot;No se pudo encontrar la imagen: /images/modos de juego.jpg&quot;);
+&nbsp;        }
+&nbsp;
+&nbsp;        JPanel buttonPanel = new JPanel();
+&nbsp;        buttonPanel.setOpaque(false);
+&nbsp;        buttonPanel.setLayout(null);
+&nbsp;
+&nbsp;        playerVsMachineButton = new JButton(&quot;Player vs Machine&quot;);
+&nbsp;        machineVsMachineButton = new JButton(&quot;Machine vs Machine&quot;);
+&nbsp;        playerVsPlayerButton = new JButton(&quot;Player vs Player&quot;);
+&nbsp;
+&nbsp;        configureButton(playerVsMachineButton);
+&nbsp;        configureButton(machineVsMachineButton);
+&nbsp;        configureButton(playerVsPlayerButton);
+&nbsp;
+&nbsp;        int buttonWidth = 350;
+&nbsp;        int buttonHeight = 70;
+&nbsp;        int xOffset = width - buttonWidth - 50; // Mover los botones a la derecha
+&nbsp;
+&nbsp;        playerVsMachineButton.setBounds(xOffset, 70, buttonWidth, buttonHeight);
+&nbsp;        machineVsMachineButton.setBounds(xOffset, 160, buttonWidth, buttonHeight);
+&nbsp;        playerVsPlayerButton.setBounds(xOffset, 250, buttonWidth, buttonHeight);
+&nbsp;
+&nbsp;        buttonPanel.add(playerVsMachineButton);
+&nbsp;        buttonPanel.add(machineVsMachineButton);
+&nbsp;        buttonPanel.add(playerVsPlayerButton);
+&nbsp;
+&nbsp;        buttonPanel.setBounds(0, 0, width, height);
+&nbsp;        layeredPane.add(buttonPanel, JLayeredPane.PALETTE_LAYER);
+&nbsp;
+&nbsp;        add(layeredPane, BorderLayout.CENTER);
+&nbsp;    }
+&nbsp;
+&nbsp;    private void loadImage(JLabel label, URL imageUrl) {
+&nbsp;        try {
+&nbsp;            ImageIcon imageIcon = new ImageIcon(imageUrl);
+&nbsp;            Image image = imageIcon.getImage();
+&nbsp;            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+&nbsp;            Image scaledImage = image.getScaledInstance(screenSize.width, screenSize.height, Image.SCALE_SMOOTH);
+&nbsp;            label.setIcon(new ImageIcon(scaledImage));
+&nbsp;        } catch (Exception e) {
+&nbsp;            e.printStackTrace();
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void configureButton(JButton button) {
+&nbsp;        button.setBackground(Color.GRAY);
+&nbsp;        button.setForeground(Color.BLACK);
+&nbsp;        button.setOpaque(true);
+&nbsp;        button.setBorderPainted(false);
+&nbsp;        button.setFocusPainted(false);
+&nbsp;        button.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 16));
+&nbsp;        addHoverEffect(button);
+&nbsp;    }
+&nbsp;
+&nbsp;    private void addHoverEffect(JButton button) {
+&nbsp;        button.addMouseListener(new MouseAdapter() {
+&nbsp;            @Override
+&nbsp;            public void mouseEntered(MouseEvent e) {
+&nbsp;                button.setBackground(button.getBackground().brighter());
+&nbsp;            }
+&nbsp;
+&nbsp;            @Override
+&nbsp;            public void mouseExited(MouseEvent e) {
+&nbsp;                button.setBackground(button.getBackground().darker());
+&nbsp;            }
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareActions() {
+&nbsp;        playerVsMachineButton.addActionListener(e -&gt; {
+&nbsp;            prepareElementsBoard();
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    private void prepareElementsBoard() {
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;        // Limpiar la ventana actual
+&nbsp;        getContentPane().removeAll();
+&nbsp;        repaint();
+&nbsp;
+&nbsp;        // Configurar el JFrame para maximizar y usar toda la pantalla
+&nbsp;        dispose(); // Cierra temporalmente el JFrame para modificar sus propiedades
+&nbsp;        setUndecorated(true); // Eliminar bordes de la ventana
+&nbsp;        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximiza la ventana
+&nbsp;        setVisible(true); // Vuelve a mostrar el JFrame
+&nbsp;
+&nbsp;        // Cargar la imagen de fondo
+&nbsp;        URL imageUrl = getClass().getResource(&quot;/images/Tablero.png&quot;);
+&nbsp;        if (imageUrl == null) {
+&nbsp;            System.err.println(&quot;Error: No se pudo cargar la imagen desde /resources/images/Tablero.png&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;        ImageIcon originalIcon = new ImageIcon(imageUrl);
+&nbsp;
+&nbsp;        // Ajustar el tamaño de la imagen al tamaño del JFrame
+&nbsp;        Image scaledImage = originalIcon.getImage().getScaledInstance(
+&nbsp;                getWidth(),
+&nbsp;                getHeight(),
+&nbsp;                Image.SCALE_SMOOTH
+&nbsp;        );
+&nbsp;        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+&nbsp;
+&nbsp;        // Crear JLabel con la imagen escalada
+&nbsp;        JLabel backgroundLabel = new JLabel(scaledIcon);
+&nbsp;        backgroundLabel.setLayout(null); // Layout nulo para posicionar manualmente
+&nbsp;        backgroundLabel.setBounds(0, 0, getWidth(), getHeight());
+&nbsp;
+&nbsp;        // Configurar el cronómetro
+&nbsp;        JLabel timerLabel = new JLabel(&quot;2:00&quot;, SwingConstants.CENTER);
+&nbsp;        timerLabel.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 24));
+&nbsp;        timerLabel.setForeground(Color.RED);
+&nbsp;        timerLabel.setBounds(getWidth() - 150, 10, 140, 40);
+&nbsp;        backgroundLabel.add(timerLabel);
+&nbsp;
+&nbsp;        // Iniciar el cronómetro de 2 minutos
+&nbsp;        Timer timer = new Timer(1000, null);
+&nbsp;        final int[] timeRemaining = {120}; // Tiempo en segundos
+&nbsp;
+&nbsp;        timer.addActionListener(e -&gt; {
+&nbsp;            timeRemaining[0]--;
+&nbsp;
+&nbsp;            int minutes = timeRemaining[0] / 60;
+&nbsp;            int seconds = timeRemaining[0] % 60;
+&nbsp;            timerLabel.setText(String.format(&quot;%d:%02d&quot;, minutes, seconds));
+&nbsp;
+&nbsp;            if (timeRemaining[0] &lt;= 0) {
+&nbsp;                timer.stop();
+&nbsp;                dispose(); // Cierra la ventana actual
+&nbsp;                new WinFrame().setVisible(true); // Abre la interfaz Win
+&nbsp;            }
+&nbsp;        });
+&nbsp;
+&nbsp;        timer.start();
+&nbsp;
+&nbsp;        // Crear el tablero interactivo
+&nbsp;        Tablero tableroInteractivo = Tablero.getInstance();
+&nbsp;        int tableroAncho = (int) (getWidth() * 0.77);
+&nbsp;        int tableroAlto = (int) (getHeight() * 0.7);
+&nbsp;        int tableroX = (int) (getWidth() * 0.24);
+&nbsp;        int tableroY = (int) (getHeight() * 0.21);
+&nbsp;
+&nbsp;        tableroInteractivo.setBounds(tableroX, tableroY, tableroAncho, tableroAlto);
+&nbsp;        tableroInteractivo.setOpaque(false);
+&nbsp;
+&nbsp;        // Crear la bandeja de plantas
+&nbsp;        PlantTrayGUI plantTray = new PlantTrayGUI();
+&nbsp;        int bandejaAncho = (int) (getWidth() * 0.75);
+&nbsp;        int bandejaAlto = 120;
+&nbsp;        int bandejaX = (getWidth() - bandejaAncho) / 2;
+&nbsp;        int bandejaY = 10;
+&nbsp;
+&nbsp;        plantTray.setBounds(bandejaX, bandejaY, bandejaAncho, bandejaAlto);
+&nbsp;        plantTray.setOpaque(false);
+&nbsp;
+&nbsp;        tableroInteractivo.addSunListener(plantTray);
+&nbsp;
+&nbsp;        backgroundLabel.add(tableroInteractivo);
+&nbsp;        backgroundLabel.add(plantTray);
+&nbsp;
+&nbsp;        setContentPane(backgroundLabel);
+&nbsp;        revalidate();
+&nbsp;        repaint();
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-16 20:51</div>
+</div>
+</body>
+</html>

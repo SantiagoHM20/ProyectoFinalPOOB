@@ -80,12 +80,18 @@ public class Peashooter extends Plant implements Attacker {
      * Si un zombi está en la fila de la planta, esta le aplica daño.
      */
     public void shoot() {
-        // Obtiene el zombi más cercano en la misma fila
+        // 1. Causar daño directo al zombie más cercano en la fila
         Zombie targetZombie = Tablero.getInstance().getClosestZombieInRow(getRow(), getCol());
         if (targetZombie != null) {
-            targetZombie.takeDamage(DAMAGE); // Aplica el daño al zombi
-            System.out.println("Peashooter en (" + getRow() + ", " + getCol() + ") disparó a zombie en (" + targetZombie.getRow() + ", " + targetZombie.getCol() + "). Salud restante: " + targetZombie.getHealth());
+            targetZombie.takeDamage(DAMAGE);
+            System.out.println("Pashooter en (" + getRow() + ", " + getCol() + ") causó daño directo a zombie en ("
+                    + targetZombie.getRow() + ", " + targetZombie.getCol() + "). Salud restante: " + targetZombie.getHealth());
         }
+
+        // 2. Disparar un proyectil hacia la derecha
+        Projectile projectile = new Projectile(getRow(), getCol() + 1, DAMAGE);
+        Tablero.getInstance().addProjectile(projectile);
+        System.out.println("Peashooter en (" + getRow() + ", " + getCol() + ") disparó un proyectil hacia la derecha.");
     }
 
     /**

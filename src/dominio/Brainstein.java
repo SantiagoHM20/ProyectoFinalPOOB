@@ -1,10 +1,14 @@
 package dominio;
 
 import javax.swing.*;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
 
 /**
- * Representa al zombie Brainstein, una variante especial de zombie con características personalizables
- * dentro del juego. Esta clase extiende la funcionalidad base de la clase {@link Zombie}.
+ * Representa al zombie Brainstein, una variante especial de zombie.
+ * Brainstein permanece estático en el tablero y genera cerebros como recurso cada 20 segundos.
  */
 public class Brainstein extends Zombie {
 
@@ -12,10 +16,19 @@ public class Brainstein extends Zombie {
     public static final int COST = 50;
 
     /** La cantidad de salud inicial del zombie Brainstein. */
-    private int HEALTH = 300;
+    private int health = 300;
+
+    /** La cantidad de cerebros que genera cada intervalo. */
+    private static final int BRAIN_REWARD = 25;
+
+    /** El intervalo en milisegundos para generar cerebros (20 segundos). */
+    private static final int GENERATION_INTERVAL = 20000;
 
     /** La imagen asociada con este zombie. */
-    private ImageIcon gifBasic;
+    private ImageIcon gifBrainstein;
+
+    /** Temporizador para manejar la generación de cerebros. */
+    private Timer generationTimer;
 
     /**
      * Constructor de la clase Brainstein.
@@ -26,11 +39,11 @@ public class Brainstein extends Zombie {
      */
     public Brainstein(int row, int col) {
         super(row, col, COST);
-        this.HEALTH = 300;
+        this.health = 300;
 
         // Ruta relativa para cargar el GIF desde el classpath
         String gifPath = "/images/Brainstein.gif";
-        gifBasic = new ImageIcon(getClass().getResource(gifPath)); // Cargar desde el classpath
+        gifBrainstein = new ImageIcon(getClass().getResource(gifPath));
 
         action(); // Inicia la acción al crearse
     }
@@ -42,54 +55,93 @@ public class Brainstein extends Zombie {
      */
     @Override
     public ImageIcon getImage() {
-        return gifBasic;
+        return gifBrainstein;
     }
 
     /**
      * Método que define las acciones específicas de este zombie.
-     * Actualmente está vacío y puede ser personalizado según los requerimientos del juego.
+     * Brainstein inicia un temporizador que genera cerebros periódicamente.
      */
     @Override
     public void action() {
-        // Definir las acciones específicas para Brainstein aquí
+        generationTimer = new Timer(GENERATION_INTERVAL, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateBrains();
+            }
+        });
+        generationTimer.setRepeats(true);
+        generationTimer.start();
+    }
+
+    /**
+     * Genera cerebros y los agrega al contador global de recursos del tablero.
+     */
+    private void generateBrains() {
+        Tablero.getInstance().addBrains(BRAIN_REWARD);
+        System.out.println("Brainstein generó " + BRAIN_REWARD + " cerebros. Recursos totales: " + Tablero.getInstance().getbrains());
     }
 
     /**
      * Elimina el zombie del tablero.
-     * Notifica al tablero para que elimine al zombie y registra un mensaje en la consola.
+     * Detiene su temporizador y notifica al tablero para que lo elimine.
      */
     @Override
     public void eliminate() {
-        Tablero.getInstance().removeZombie(this); // Notificar al tablero para que elimine al zombie
-        System.out.println("Zombie eliminado en (" + getRow() + ", " + getCol() + ").");
+        stopAction();
+        Tablero.getInstance().removeZombie(this);
+        System.out.println("Brainstein eliminado en (" + getRow() + ", " + getCol() + ").");
     }
 
     /**
-     * Cambia el GIF asociado con el zombie.
-     * Actualmente no tiene implementación específica, pero puede ser usado para cambiar la animación del zombie.
+     * Cambia el GIF asociado con el zombie al estado de muerte.
      */
     @Override
     public void changeGiff() {
-        // Implementar el cambio de GIF si es necesario
+        try {
+            URL gifURL = getClass().getResource("/images/ZombieDie.gif"); // Cambia la ruta si es necesario
+            if (gifURL == null) {
+                throw new IllegalArgumentException("Recurso no encontrado: /images/ZombieDie.gif");
+            }
+            this.gifBrainstein = new ImageIcon(gifURL); // Cambia el ícono a la animación de muerte
+        } catch (Exception e) {
+            System.err.println("Error al cambiar GIF: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
      * Detiene las acciones asociadas al zombie.
-     * Actualmente no tiene implementación específica.
+     * Detiene el temporizador de generación de cerebros.
      */
     @Override
     public void stopAction() {
-        // Implementar la detención de acciones si es necesario
+        if (generationTimer != null && generationTimer.isRunning()) {
+            generationTimer.stop();
+        }
     }
 
     /**
      * Aplica daño al zombie.
-     * Actualmente no tiene implementación específica, pero puede usarse para reducir la salud del zombie.
+     * Reduce su salud y verifica si debe ser eliminado.
      *
-     * @param i la cantidad de daño a aplicar.
+     * @param damage la cantidad de daño recibido.
      */
     @Override
-    public void takeDamage(int i) {
-        // Implementar la lógica de daño si es necesario
+    public void takeDamage(int damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            eliminate();
+        }
+    }
+
+    /**
+     * Devuelve la salud actual del zombie.
+     *
+     * @return la salud del zombie.
+     */
+    @Override
+    public int getHealth() {
+        return this.health;
     }
 }

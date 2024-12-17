@@ -1,3 +1,4 @@
+
 package dominio;
 
 import javax.swing.*;
@@ -22,6 +23,8 @@ public class Tablero extends JPanel {
     private static final int ROWS = 5;
     protected static final int COLS = 10;
     private static Tablero instance;
+    private boolean lose = false;
+    private JPanel[][] cells;
 
     private Plant[][] plants;
     private List<Projectile> projectiles;
@@ -29,9 +32,15 @@ public class Tablero extends JPanel {
     private int currentSuns;
     private String selectedPlantType;
     private List<JLabel> suns;
+    private boolean shovelMode = false;
+
+    private int brains = 0;
     private Map<Integer, Podadora> podadoras; // Mapa para almacenar las podadoras por fila
     private Random random;
     private Zombie[][] zombie;
+    Timer projectileTimer = new Timer(100, e -> moveProjectiles());
+    Timer explosionTimer = new Timer(100, e -> handleExplosions());
+    Timer zombiesTimer = new Timer(6000, e -> generateZombies());
 
     /**
      * Constructor de la clase Tablero.
@@ -52,19 +61,21 @@ public class Tablero extends JPanel {
         initializePodadoras(); // Inicializar las podadoras al crear el tablero
 
         // Temporizador para mover los proyectiles
-        Timer projectileTimer = new Timer(100, e -> moveProjectiles());
+
         projectileTimer.start();
 
         // Temporizador para manejar las explosiones
-        Timer explosionTimer = new Timer(100, e -> handleExplosions());
+
         explosionTimer.start();
 
         // Temporizador para generar zombis cada cierto tiempo
-        Timer zombiesTimer = new Timer(6000, e -> generateZombies());
+
         zombiesTimer.start();
 
         debugBoardState();
     }
+
+
 
     /**
      * Elimina una planta del tablero.
@@ -101,6 +112,203 @@ public class Tablero extends JPanel {
         // Logs después de intentar eliminar
         System.out.println("Estado después de eliminar: " + (plants[row][col] == null ? "null" : plants[row][col]));
     }
+
+
+    /**
+     * Inicializa el tablero con paneles transparentes como celdas.
+     * Cada celda se guarda en la matriz cells para un acceso rápido.
+     */
+    private void initializeTransparentBoard() {
+        cells = new JPanel[ROWS][COLS]; // Inicializa la matriz de celdas
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                JPanel cell = new JPanel();
+                cell.setOpaque(false);
+                cell.setBorder(BorderFactory.createLineBorder(Color.GRAY)); // Opcional: borde para depuración visual
+                int finalRow = row;
+                int finalCol = col;
+
+                // Añadir un MouseListener para manejar clics en las celdas
+                cell.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        handleCellClick(finalRow, finalCol, cell);
+                    }
+                });
+
+                cells[row][col] = cell; // Almacenar la celda en la matriz
+                add(cell); // Agregar la celda al tablero principal
+            }
+        }
+    }
+
+    /**
+     * Maneja el clic en una celda específica para colocar una planta.
+     * Si la celda está vacía y se tiene suficiente sol, se coloca una planta de acuerdo al tipo seleccionado.
+     *
+     * @param row  Fila de la celda seleccionada.
+     * @param col  Columna de la celda seleccionada.
+     * @param cell La celda seleccionada en el tablero.
+     */
+    public void handleCellClick(int row, int col, JPanel cell) {
+        if (col == 0) {
+            System.out.println("No puedes colocar plantas en la columna de las podadoras.");
+            return;
+        }
+
+        // Si el modo pala está activado, eliminar la planta
+        if (shovelMode) {
+            if (plants[row][col] != null) {
+                System.out.println("Removiendo planta de (" + row + ", " + col + ").");
+                removePlant(plants[row][col]); // Llamar al método para eliminar la planta
+            } else {
+                System.out.println("No hay planta en esta celda para eliminar.");
+            }
+            return; // No continuar con la colocación de plantas
+        }
+
+        if (selectedPlantType.equals("shovel")) {
+            Plant plantToRemove = plants[row][col];
+            if(plantToRemove == null){
+            System.out.println("No hay planta en esa posición");
+                return;
+            }
+            System.out.println("Eliminando planta en celda: " + row + ", " + col);
+            removePlant(plantToRemove);
+            return;
+        }
+
+        // Lógica existente para colocar plantas
+        if (plants[row][col] == null) {
+            Plant newPlant = null;
+
+            // Verificar el tipo de planta seleccionado y si hay suficientes soles
+            if ("Peashooter".equals(selectedPlantType) && currentSuns >= Peashooter.COST) {
+                newPlant = new Peashooter(row, col);
+            } else if ("Sunflower".equals(selectedPlantType) && currentSuns >= Sunflower.COST) {
+                newPlant = new Sunflower(row, col);
+            } else if ("Wall-nut".equals(selectedPlantType) && currentSuns >= WallNut.COST) {
+                newPlant = new WallNut(row, col);
+            } else if ("PotatoMine".equals(selectedPlantType) && currentSuns >= PotatoMine.COST) {
+                newPlant = new PotatoMine(row, col);
+            } else if ("ECIPlant".equals(selectedPlantType) && currentSuns >= ECIPlant.COST) {
+                newPlant = new ECIPlant(row, col);
+            } else if ("EvolvePlant".equals(selectedPlantType) && currentSuns >= EvolvePlant.COST) {
+                newPlant = new EvolvePlant(row, col);
+            }
+
+            if (newPlant != null) {
+                plants[row][col] = newPlant;
+                currentSuns -= newPlant.getCost();
+                System.out.println(newPlant.getClass().getSimpleName() + " colocado en (" + row + ", " + col + "). Soles restantes: " + currentSuns);
+
+                JLabel plantLabel = new JLabel(newPlant.getImage());
+                if (newPlant instanceof SunProducer) {
+                    cell.setLayout(null);
+                    plantLabel.setBounds(-15, -10, plantLabel.getPreferredSize().width, plantLabel.getPreferredSize().height);
+                    cell.add(plantLabel);
+                    ((SunProducer) newPlant).startProducingSuns(this, cell);
+                } else {
+                    cell.setLayout(new BorderLayout());
+                    cell.add(plantLabel, BorderLayout.CENTER);
+                }
+
+                cell.revalidate();
+                cell.repaint();
+                newPlant.action();
+                notifySunListeners();
+            } else {
+                System.out.println("No tienes suficientes soles o no se seleccionó una planta.");
+            }
+        } else {
+            System.out.println("La celda ya está ocupada.");
+        }
+    }
+
+    /**
+     * Método para agregar un sol visual en una posición específica del tablero.
+     *
+     * @param row Fila en la que se agrega el sol.
+     * @param col Columna en la que se agrega el sol.
+     * @param sunValue El valor del sol agregado.
+     */
+    public void addSunVisual(int row, int col, int sunValue) {
+        JPanel cell = (JPanel) getComponent(row * COLS + col);
+        JLabel sunLabel = new JLabel(new ImageIcon("resources/images/cir3.png"));
+        sunLabel.setBounds(10, 10, 50, 50);
+        sunLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        sunLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                currentSuns += sunValue;
+                notifySunListeners();
+                cell.remove(sunLabel);
+                suns.remove(sunLabel);
+                cell.revalidate();
+                cell.repaint();
+            }
+        });
+
+        cell.add(sunLabel);
+        suns.add(sunLabel);
+        cell.setComponentZOrder(sunLabel, 0);
+        cell.revalidate();
+        cell.repaint();
+
+        new Timer(15000, e -> {
+            if (suns.contains(sunLabel)) {
+                cell.remove(sunLabel);
+                suns.remove(sunLabel);
+                cell.revalidate();
+                cell.repaint();
+            }
+        }).start();
+    }
+
+    public void addSunListener(SunListener listener) {
+        if (!sunListeners.contains(listener)) {
+            sunListeners.add(listener);
+        }
+    }
+
+    /**
+     * Método para seleccionar el tipo de planta a colocar.
+     *
+     * @param plantType El tipo de planta seleccionada.
+     */
+    public void setSelectedPlantType(String plantType) {
+        this.selectedPlantType = plantType;
+        if ("shovel".equals(plantType)) {
+            System.out.println("Modo de pala activado.");
+        }
+    }
+    /**
+     * Obtiene la cantidad actual de soles disponibles.
+     *
+     * @return La cantidad de soles.
+     */
+    public int getCurrentSuns() {
+        return currentSuns;
+    }
+
+    /**
+     * Agrega un oyente para los cambios en la cantidad de soles.
+     *
+     * @param listener El oyente a agregar.
+     */
+
+
+    /**
+     * Notifica a todos los oyentes sobre un cambio en la cantidad de soles.
+     */
+    private void notifySunListeners() {
+        for (SunListener listener : sunListeners) {
+            listener.updateSunCount(currentSuns);
+        }
+    }
+
+
 
     /**
      * Elimina un zombie del tablero.
@@ -164,7 +372,7 @@ public class Tablero extends JPanel {
             // Verifica si la posición está libre antes de colocar un zombie
             if (zombie[row][col] == null) {
                 // Escoge un tipo de zombie aleatorio
-                int zombieType = (int) (Math.random() * 3); // 0, 1 o 2
+                int zombieType = (int) (Math.random() * 5); // 0, 1, 2, 3 o 4
 
                 // Crea el zombie correspondiente
                 Zombie newZombie;
@@ -177,6 +385,13 @@ public class Tablero extends JPanel {
                         break;
                     case 2:
                         newZombie = new Conehead(row, col);
+                        break;
+
+                    case 3:
+                        newZombie = new Brainstein(row, col);
+                        break;
+                    case 4:
+                        newZombie = new ECIZombie(row,col);
                         break;
                     default:
                         continue; // Si algo falla, intenta de nuevo
@@ -246,18 +461,8 @@ public class Tablero extends JPanel {
         }
     }
 
-    /**
-     * Obtiene la instancia única del tablero.
-     * Si la instancia no ha sido creada, se inicializa una nueva.
-     *
-     * @return La instancia única del tablero.
-     */
-    public static Tablero getInstance() {
-        if (instance == null) {
-            instance = new Tablero();
-        }
-        return instance;
-    }
+
+
 
     /**
      * Mata a todos los zombies en la fila especificada mediante el uso de una podadora.
@@ -298,117 +503,22 @@ public class Tablero extends JPanel {
                         delayTimer.start();
                     }
                 }
-                podadoras.remove(row); // Eliminar la podadora después de usarla
+
+                // Eliminar gráficamente la podadora
+                JPanel podadoraCell = (JPanel) getComponent(row * COLS);
+                podadoraCell.removeAll();
+                podadoraCell.revalidate();
+                podadoraCell.repaint();
+                System.out.println("Podadora eliminada de la fila " + row);
+
+                podadoras.remove(row); // Eliminar la podadora de la lógica después de usarla
             }
         }
     }
 
-    /**
-     * Inicializa un tablero transparente donde cada celda es un JPanel con opacidad y borde.
-     * Cada celda responde a eventos de ratón (mouseEnter, mouseExit y mouseClick) para cambiar su apariencia y ejecutar acciones.
-     */
-    private void initializeTransparentBoard() {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                JPanel cell = new JPanel();
-                cell.setOpaque(false); // Hacer la celda transparente
-                cell.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Bordear la celda
 
-                int row = i;
-                int col = j;
 
-                // Agregar un listener para eventos de ratón
-                cell.addMouseListener(new MouseAdapter() {
-                    Color originalColor = cell.getBackground(); // Guardar el color original
 
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        // Cambiar el fondo al pasar el ratón
-                        cell.setOpaque(true); // Activar opacidad para que el color se muestre
-                        cell.setBackground(new Color(255, 255, 255, 150)); // Blanco semitransparente
-                        cell.revalidate();
-                        cell.repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // Restaurar el color original al salir
-                        cell.setOpaque(false);
-                        cell.setBackground(originalColor); // Volver al color original
-                        cell.revalidate();
-                        cell.repaint();
-                    }
-
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        handleCellClick(row, col, cell); // Manejar el clic en la celda
-                    }
-                });
-
-                add(cell); // Añadir la celda al tablero
-            }
-        }
-    }
-
-    /**
-     * Maneja el clic en una celda específica para colocar una planta.
-     * Si la celda está vacía y se tiene suficiente sol, se coloca una planta de acuerdo al tipo seleccionado.
-     *
-     * @param row  Fila de la celda seleccionada.
-     * @param col  Columna de la celda seleccionada.
-     * @param cell La celda seleccionada en el tablero.
-     */
-    private void handleCellClick(int row, int col, JPanel cell) {
-        // Verificar si la celda está reservada para una podadora
-        if (col == 0) {
-            System.out.println("No puedes colocar plantas en la columna de las podadoras.");
-            return; // Salir del método sin hacer nada
-        }
-
-        // Si la celda no tiene planta, intenta colocar una nueva planta
-        if (plants[row][col] == null) {
-            Plant newPlant = null;
-
-            // Determinar el tipo de planta seleccionada y verificar el costo
-            if ("Peashooter".equals(selectedPlantType) && currentSuns >= Peashooter.COST) {
-                newPlant = new Peashooter(row, col);
-            } else if ("Sunflower".equals(selectedPlantType) && currentSuns >= Sunflower.COST) {
-                newPlant = new Sunflower(row, col);
-            } else if ("Wall-nut".equals(selectedPlantType) && currentSuns >= WallNut.COST) {
-                newPlant = new WallNut(row, col);
-            } else if ("PotatoMine".equals(selectedPlantType) && currentSuns >= PotatoMine.COST) {
-                newPlant = new PotatoMine(row, col);
-            }
-
-            if (newPlant != null) {
-                // Colocar la planta en el tablero
-                plants[row][col] = newPlant;
-                currentSuns -= newPlant.getCost(); // Restar soles
-                System.out.println(newPlant.getClass().getSimpleName() + " colocado en (" + row + ", " + col + "). Soles restantes: " + currentSuns);
-
-                // Configurar la visualización de la planta
-                JLabel plantLabel = new JLabel(newPlant.getImage());
-                if (newPlant instanceof Sunflower) {
-                    cell.setLayout(null);
-                    plantLabel.setBounds(-15, -10, plantLabel.getPreferredSize().width, plantLabel.getPreferredSize().height);
-                    cell.add(plantLabel);
-                    ((Sunflower) newPlant).startProducingSuns(this, cell);
-                } else {
-                    cell.setLayout(new BorderLayout());
-                    cell.add(plantLabel, BorderLayout.CENTER);
-                }
-
-                cell.revalidate();
-                cell.repaint();
-                newPlant.action(); // Iniciar la acción de la planta
-                notifySunListeners(); // Notificar cambios de soles
-            } else {
-                System.out.println("No tienes suficientes soles o no se seleccionó una planta.");
-            }
-        } else {
-            System.out.println("La celda ya está ocupada.");
-        }
-    }
 
     /**
      * Método para manejar las explosiones de las Potato Mines.
@@ -497,51 +607,8 @@ public class Tablero extends JPanel {
     }
 
 
-    /**
-     * Método para agregar un sol visual en una posición específica del tablero.
-     *
-     * @param row Fila en la que se agrega el sol.
-     * @param col Columna en la que se agrega el sol.
-     * @param sunValue El valor del sol agregado.
-     */
-    public void addSunVisual(int row, int col, int sunValue) {
-        JPanel cell = (JPanel) getComponent(row * COLS + col);
-        JLabel sunLabel = new JLabel(new ImageIcon("resources/images/cir3.png"));
-        sunLabel.setBounds(10, 10, 50, 50);
-        sunLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        sunLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                currentSuns += sunValue;
-                notifySunListeners();
-                cell.remove(sunLabel);
-                suns.remove(sunLabel);
-                cell.revalidate();
-                cell.repaint();
-            }
-        });
 
-        cell.add(sunLabel);
-        suns.add(sunLabel);
-        cell.setComponentZOrder(sunLabel, 0);
-        cell.revalidate();
-        cell.repaint();
-
-        // Temporizador para eliminar el sol después de 15 segundos.
-        new Timer(15000, e -> {
-            if (suns.contains(sunLabel)) {
-                cell.remove(sunLabel);
-                suns.remove(sunLabel);
-                cell.revalidate();
-                cell.repaint();
-            }
-        }).start();
-    }
-
-    /**
-     * Método que mueve los proyectiles a través del tablero.
-     */
     public void moveProjectiles() {
         Iterator<Projectile> iterator = projectiles.iterator();
         while (iterator.hasNext()) {
@@ -592,44 +659,28 @@ public class Tablero extends JPanel {
         cell.revalidate();
         cell.repaint();
     }
-
     /**
-     * Método para seleccionar el tipo de planta a colocar.
+     * Método sobrescrito para dibujar los elementos gráficos en el tablero, como los proyectiles.
      *
-     * @param plantType El tipo de planta seleccionada.
+     * @param g El objeto gráfico utilizado para dibujar.
      */
-    public void setSelectedPlantType(String plantType) {
-        this.selectedPlantType = plantType;
-    }
+    @Override
 
-    /**
-     * Obtiene la cantidad actual de soles disponibles.
-     *
-     * @return La cantidad de soles.
-     */
-    public int getCurrentSuns() {
-        return currentSuns;
-    }
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
-    /**
-     * Agrega un oyente para los cambios en la cantidad de soles.
-     *
-     * @param listener El oyente a agregar.
-     */
-    public void addSunListener(SunListener listener) {
-        if (!sunListeners.contains(listener)) {
-            sunListeners.add(listener);
+        // Dibujar los proyectiles como círculos verdes
+        for (Projectile projectile : projectiles) {
+            int x = projectile.getCol() * getWidth() / COLS;
+            int y = projectile.getRow() * getHeight() / ROWS;
+
+            g.setColor(Color.GREEN); // Color verde para las bolas
+            g.fillOval(x + 10, y + 20, 20, 20); // Dibuja un círculo de 20x20 píxeles
         }
     }
 
-    /**
-     * Notifica a todos los oyentes sobre un cambio en la cantidad de soles.
-     */
-    private void notifySunListeners() {
-        for (SunListener listener : sunListeners) {
-            listener.updateSunCount(currentSuns);
-        }
-    }
+
+
 
     /**
      * Inicializa las podadoras en el tablero.
@@ -665,24 +716,7 @@ public class Tablero extends JPanel {
         }
     }
 
-    /**
-     * Método sobrescrito para dibujar los elementos gráficos en el tablero, como los proyectiles.
-     *
-     * @param g El objeto gráfico utilizado para dibujar.
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
 
-        // Dibujar los proyectiles.
-        for (Projectile projectile : projectiles) {
-            int x = projectile.getCol() * getWidth() / COLS;
-            int y = projectile.getRow() * getHeight() / ROWS;
-
-            g.setColor(Color.GREEN);
-            g.fillOval(x + 10, y + 20, 20, 20);
-        }
-    }
 
     /**
      * Obtiene la planta ubicada en una celda específica.
@@ -790,15 +824,20 @@ public class Tablero extends JPanel {
      * @param a El nuevo tablero.
      */
     public void changeGame(Tablero a) {
-        instance = a.getTablero();
+        instance = a.getInstance();
     }
+
+
 
     /**
      * Obtiene el tablero actual.
      *
      * @return El tablero actual.
      */
-    public Tablero getTablero() {
+    public static Tablero getInstance() {
+        if (instance == null) {
+            instance = new Tablero();
+        }
         return instance;
     }
 
@@ -849,7 +888,176 @@ public class Tablero extends JPanel {
 
     }
 
+    public void addBrains(int brainReward) {
+        brains += brainReward;
+
+    }
+
+    public Integer getbrains(){
+
+        return brains;
+    }
+
+
+    public Plant getClosestPlantInRow(int row, int col) {
+        Plant closestPlant = null;
+        for (int c = col; c >= 0; c--) { // Busca hacia la izquierda desde la posición actual
+            Plant p = plants[row][c];
+            if (p != null && p.isAlive()) {
+                closestPlant = p;
+                break;
+            }
+        }
+        return closestPlant;
+    }
+
+
+    public boolean isLose() {
+        return lose;
+    }
+
+    public void setLose(boolean lose) {
+        this.lose = lose;
+    }
+
+    // Método para reiniciar la instancia
+    public static void resetInstance() {
+        if (instance != null) {
+            instance.cleanup(); // Limpia las estructuras actuales
+        }
+        instance = new Tablero(); // Crea una nueva instancia
+        System.out.println("La instancia del tablero ha sido reiniciada.");
+    }
+
+
+
+    // Método para inicializar todas las estructuras del tablero
+    private void initializeBoard() {
+        setLayout(new GridLayout(ROWS, COLS));
+        setOpaque(false);
+
+        plants = new Plant[ROWS][COLS];
+        zombie = new Zombie[ROWS][COLS];
+        projectiles = new ArrayList<>();
+        sunListeners = new ArrayList<>();
+        suns = new ArrayList<>();
+        podadoras = new HashMap<>();
+        lose = false;
+
+        initializeTransparentBoard();
+        initializePodadoras();
+    }
+
+    // Método para limpiar las estructuras internas antes de reiniciar
+    private void cleanup() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                plants[i][j] = null;
+                zombie[i][j] = null;
+            }
+        }
+        projectiles.clear();
+        suns.clear();
+        podadoras.clear();
+        lose = false;
+    }
+
+    /**
+     * Reinicia el estado del tablero, limpiando tanto los componentes gráficos como las estructuras lógicas.
+     */
+    public void reset() {
+        // Detener los temporizadores
+        Timer[] timers = {projectileTimer, explosionTimer, zombiesTimer};
+        for (Timer timer : timers) {
+            if (timer != null) {
+                timer.stop();
+            }
+        }
+
+        // Eliminar explícitamente los objetos de plants[][] y zombie[][]
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (plants[i][j] != null) {
+                    plants[i][j] = null; // Elimina la planta
+                }
+                if (zombie[i][j] != null) {
+                    zombie[i][j] = null; // Elimina el zombie
+                }
+            }
+        }
+
+
+        // Limpiar listas relacionadas
+        projectiles.clear();
+        sunListeners.clear();
+        suns.clear();
+        podadoras.clear();
+
+        // Reiniciar matrices
+        plants = null;
+        plants = new Plant[ROWS][COLS];
+        zombie = null; // Forzar la liberación de memoria
+        zombie = new Zombie[ROWS][COLS]; // Re-crear el arreglo
+
+        // Reiniciar atributos del juego
+        currentSuns = 650;
+        brains = 0;
+        selectedPlantType = "";
+        lose = false;
+
+        // Reiniciar estado visual
+        removeAll();
+        revalidate();
+        repaint();
+
+        // Reiniciar el tablero y las podadoras
+        initializeTransparentBoard();
+        initializePodadoras();
+
+        System.out.println("El tablero ha sido reiniciado.");
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (zombie[i][j] != null) {
+                    System.out.println("Zombie en fila " + i + ", columna " + j + " eliminado.");
+                    zombie[i][j] = null;
+                }
+            }
+        }
+    }
+    private int getRowFromEvent(MouseEvent e) {
+        return e.getY() / (getHeight() / ROWS);
+    }
+
+    private int getColFromEvent(MouseEvent e) {
+        return e.getX() / (getWidth() / COLS);
+    }
+
+
+    public void mouseClicked(MouseEvent e) {
+        int row = getRowFromEvent(e);
+        int col = getColFromEvent(e);
+
+        if ("shovel".equals(selectedPlantType)) {
+            if (plants[row][col] != null) {
+                removePlant(plants[row][col]);
+                selectedPlantType = ""; // Desactiva el modo pala después de usarlo
+            } else {
+                JOptionPane.showMessageDialog(null, "No hay planta para eliminar en esta posición.",
+                        "Error", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+    public void toggleShovelMode() {
+        shovelMode = !shovelMode; // Alternar el modo pala
+        System.out.println("Modo pala: " + (shovelMode ? "Activado" : "Desactivado"));
+    }
+
+    public JPanel[][] getCells() {
+        return cells;
+    }
 }
+
+
 
 
 
